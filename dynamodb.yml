@@ -36,10 +36,6 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
-        - AttributeName: CustomerId
-          AttributeType: S
-        - AttributeName: GoforId
-          AttributeType: S
       KeySchema:
         - AttributeName: id
           KeyType: HASH
