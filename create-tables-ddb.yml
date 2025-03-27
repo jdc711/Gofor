@@ -15,20 +15,6 @@ Resources:
       SSESpecification:
         SSEEnabled: true
 
-  GoforTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: Gofor
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-      BillingMode: PAY_PER_REQUEST
-      SSESpecification:
-        SSEEnabled: true
-
   OrderTable:
     Type: AWS::DynamoDB::Table
     Properties:

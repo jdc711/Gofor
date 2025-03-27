@@ -1,0 +1,70 @@
+Resources:
+  GetGoforLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GetGoforLambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  GetGoforLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: GetGoforLambdaPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+            Resource: arn:aws:dynamodb:*:*:table/GoFor
+      Roles:
+        - !Ref GetGoforLambdaRole
+
+  GoForTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      TableName: "GoFor"
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+      SSESpecification:
+        SSEEnabled: true
+
+  GetGoforApi: 
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+
+  GetGoforLambda:
+    Type: AWS:Serverless::Function
+    Properties:
+      FunctionName: GetGoforLambda
+      Handler: 
+      Runtime: java
+      CodeUri: 
+      Role: !GetAtt GetGoforLambdaRole.Arn
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref GoForTable
+      Timeout: 300
+      MemorySize: 2048
+      Events:
+      GetRequestById:
+        Type: Api
+        Properties:
+          RestApiId: !Ref GetGoforApi
+          Path: 
+          Method: get
+
