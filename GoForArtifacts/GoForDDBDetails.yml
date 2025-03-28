@@ -28,6 +28,58 @@ Resources:
       Roles:
         - !Ref GetGoforLambdaRole
 
+  GoforLoginLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GoforLoginLambdaRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  GoforLoginLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: GetGoforLambdaPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+                - dynamodb:DescribeTable
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+                - dynamodb:Query
+                - dynamodb:Scan
+            Resource: arn:aws:dynamodb:*:*:table/GoForLogin
+      Roles:
+        - !Ref GoforLoginLambdaRole
+
+  GoForLoginTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      TableName: "GoForLogin"
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        - AttributeName: "email"
+          AttributeType: "S"
+        - AttributeName: "password"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+      SSESpecification:
+        SSEEnabled: true
+
   GoForTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -52,7 +104,7 @@ Resources:
     Properties:
       FunctionName: GetGoforLambda
       Handler: 
-      Runtime: java
+      Runtime: java8
       CodeUri: 
       Role: !GetAtt GetGoforLambdaRole.Arn
       Environment:
@@ -67,4 +119,17 @@ Resources:
           RestApiId: !Ref GetGoforApi
           Path: 
           Method: get
-
+  
+  GoforLoginLambda:
+    Type: AWS:Serverless::Function
+    Properties:
+      FunctionName: GoforLoginLambda
+      Handler: 
+      Runtime: java8
+      CodeUri: 
+      Role: !GetAtt GoforLoginLambdaRole.Arn
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref GoForLoginTable
+      Timeout: 300
+      MemorySize: 2048
