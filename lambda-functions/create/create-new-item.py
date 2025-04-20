@@ -15,13 +15,13 @@ from datetime import datetime
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("Item")
 
-def req_valid(data):
+def valid_req(data):
     if "store_id" not in data or "name" not in data or "price" not in data:
         return False
 
 def lambda_handler(event, context):
     data = json.loads(event["body"])
-    if not req_valid(data):
+    if not valid_req(data):
         return {
             "statusCode": 400,
             "body": json.dumps({"message": "Missing required parameter"}),
@@ -39,9 +39,16 @@ def lambda_handler(event, context):
         "store_id": store_id
     }
 
-    table.put_item(Item=item)
+    try:
+        table.put_item(Item=item)
 
-    return {
-        "statusCode": 201,
-        "body": json.dumps({"message": "Item created", "id": item_id}),
-    }
+        return {
+            "statusCode": 201,
+            "body": json.dumps({"message": "Item created", "id": item_id}),
+        }
+    
+    except Exception as e: 
+        return {
+            "statusCode": 500, 
+            "body": json.dumps({"message": "Failed to create item", "error": str(e)})
+        }

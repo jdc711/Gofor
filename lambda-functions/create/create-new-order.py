@@ -15,7 +15,7 @@ from datetime import datetime
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("Order")
 
-def req_valid(data):
+def valid_req(data):
     if "customer_id" not in data or "item_name" not in data:
         return False
 
@@ -26,7 +26,7 @@ def get_current_date():
 
 def lambda_handler(event, context):
     data = json.loads(event["body"])
-    if not req_valid(data):
+    if not valid_req(data):
         return {
             "statusCode": 400,
             "body": json.dumps({"message": "Missing required parameter"}),
@@ -45,9 +45,16 @@ def lambda_handler(event, context):
         "created_date": current_date
     }
 
-    table.put_item(Item=user)
+    try:
+        table.put_item(Item=order)
 
-    return {
-        "statusCode": 201,
-        "body": json.dumps({"message": "Order created", "id": order_id}),
-    }
+        return {
+            "statusCode": 201,
+            "body": json.dumps({"message": "Order created", "id": order_id}),
+        }
+
+    except Exception as e: 
+        return {
+            "statusCode": 500, 
+            "body": json.dumps({"message": "Failed to create order", "error": str(e)})
+        }

@@ -12,14 +12,14 @@ import uuid
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("User")
 
-def req_valid(data):
+def valid_req(data):
     if "name" not in data or "email" not in data or "password" not in data:
         return False
 
 def lambda_handler(event, context):
     data = json.loads(event["body"])
 
-    if not req_valid(data):
+    if not valid_req(data):
         return {
             "statusCode": 400,
             "body": json.dumps({"message": "Missing required parameter"}),
@@ -37,9 +37,17 @@ def lambda_handler(event, context):
         "password": password, 
     }
 
-    table.put_item(Item=user)
+    try:
+        table.put_item(Item=user)
+        return {
+            "statusCode": 201,
+            "body": json.dumps({"message": "User created", "id": user_id}),
+        }
 
-    return {
-        "statusCode": 201,
-        "body": json.dumps({"message": "User created", "id": user_id}),
-    }
+    except Exception as e: 
+        return {
+            "statusCode": 500, 
+            "body": json.dumps({"message": "Failed to create user", "error": str(e)})
+        }
+
+    
