@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  CustomerTable:
+  UserTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: Customer
+      TableName: User
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -11,7 +11,6 @@ Resources:
         - AttributeName: id
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
-      GlobalSecondaryIndexes: []
       SSESpecification:
         SSEEnabled: true
 
@@ -29,10 +28,24 @@ Resources:
       SSESpecification:
         SSEEnabled: true
 
-  ReviewsTable:
+  ItemTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: Reviews
+      TableName: Item
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+
+  ReviewTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Review
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -48,10 +61,10 @@ Resources:
     Properties:
       TableName: Rating
       AttributeDefinitions:
-        - AttributeName: GoforId
+        - AttributeName: UserId
           AttributeType: S
       KeySchema:
-        - AttributeName: GoforId
+        - AttributeName: UserId
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
       SSESpecification:
