@@ -1,0 +1,329 @@
+Resources:
+  CreateUserLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CreateUserLambdaRole
+      ManagedPolicyArns:
+        - Ref: CreateUserLambdaPolicy
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  CreateUserLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CreateUserLambdaPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+                - dynamodb:PutItem
+                - dynamodb:Query
+                - dynamodb:Scan
+            Resource: arn:aws:dynamodb:*:*:table/User
+      Roles:
+        - !Ref CreateUserLambdaRole
+
+  CreateUserApi: 
+      Type: AWS::Serverless::HttpApi
+      Properties:
+        StageName: prod
+
+  CreateUserApiGatewayInvokeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewayInvokePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - execute-api:Invoke
+                Resource: arn:aws:execute-api:*:*:*/*/POST/*
+  
+  CreateUserLambda:
+    Type: AWS:Serverless::Function
+    Properties:
+      FunctionName: CreateUserLambda
+      CodeUri: ../lambda-functions/create 
+      Handler: create-new-user.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt CreateUserLambdaRole.Arn
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref User
+      Timeout: 300
+      MemorySize: 2048
+      Events:
+        LoginLambdaEvent:
+          Type: HttpApi
+          Properties:
+            Path: /signup
+            Method: POST
+            ApiId: !Ref CreateUserApi
+            Auth:
+              Authorizer: CreateUserApiGatewayInvokeRole
+  
+  CreateOrderLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CreateOrderLambdaRole
+      ManagedPolicyArns:
+        - Ref: CreateOrderLambdaPolicy
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  CreateOrderLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CreateOrderLambdaPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+                - dynamodb:PutItem
+                - dynamodb:Query
+                - dynamodb:Scan
+            Resource: arn:aws:dynamodb:*:*:table/Order
+      Roles:
+        - !Ref CreateOrderLambdaRole
+
+  CreateOrderApi: 
+      Type: AWS::Serverless::HttpApi
+      Properties:
+        StageName: prod
+
+  CreateOrderApiGatewayInvokeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewayInvokePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - execute-api:Invoke
+                Resource: arn:aws:execute-api:*:*:*/*/POST/*
+  
+  CreateOrderLambda:
+    Type: AWS:Serverless::Function
+    Properties:
+      FunctionName: CreateOrderLambda
+      CodeUri: ../lambda-functions/create 
+      Handler: create-new-order.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt CreateOrderLambdaRole.Arn
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref Order
+      Timeout: 300
+      MemorySize: 2048
+      Events:
+        LoginLambdaEvent:
+          Type: HttpApi
+          Properties:
+            Path: /order
+            Method: POST
+            ApiId: !Ref CreateOrderApi
+            Auth:
+              Authorizer: CreateOrderApiGatewayInvokeRole
+
+  CreateItemLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CreateItemLambdaRole
+      ManagedPolicyArns:
+        - Ref: CreateItemLambdaPolicy
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  CreateItemLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CreateItemLambdaPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+                - dynamodb:PutItem
+                - dynamodb:Query
+                - dynamodb:Scan
+            Resource: arn:aws:dynamodb:*:*:table/Item
+      Roles:
+        - !Ref CreateItemLambdaRole
+
+  CreateItemApi: 
+      Type: AWS::Serverless::HttpApi
+      Properties:
+        StageName: prod
+
+  CreateItemApiGatewayInvokeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewayInvokePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - execute-api:Invoke
+                Resource: arn:aws:execute-api:*:*:*/*/POST/*
+  
+  CreateItemLambda:
+    Type: AWS:Serverless::Function
+    Properties:
+      FunctionName: CreateItemLambda
+      CodeUri: ../lambda-functions/create 
+      Handler: create-new-item.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt CreateItemLambdaRole.Arn
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref Item
+      Timeout: 300
+      MemorySize: 2048
+      Events:
+        LoginLambdaEvent:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: POST
+            ApiId: !Ref CreateItemApi
+            Auth:
+              Authorizer: CreateItemApiGatewayInvokeRole
+
+  CreateReviewLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: CreateReviewLambdaRole
+      ManagedPolicyArns:
+        - Ref: CreateReviewLambdaPolicy
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+  CreateReviewLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CreateReviewLambdaPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+                - dynamodb:PutItem
+                - dynamodb:Query
+                - dynamodb:Scan
+            Resource: arn:aws:dynamodb:*:*:table/Item
+      Roles:
+        - !Ref CreateReviewLambdaRole
+
+  CreateReviewApi: 
+      Type: AWS::Serverless::HttpApi
+      Properties:
+        StageName: prod
+
+  CreateReviewApiGatewayInvokeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewayInvokePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - execute-api:Invoke
+                Resource: arn:aws:execute-api:*:*:*/*/POST/*
+  
+  CreateReviewLambda:
+    Type: AWS:Serverless::Function
+    Properties:
+      FunctionName: CreateItemLambda
+      CodeUri: ../lambda-functions/create 
+      Handler: create-new-review.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt CreateItemLambdaRole.Arn
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref Review
+      Timeout: 300
+      MemorySize: 2048
+      Events:
+        LoginLambdaEvent:
+          Type: HttpApi
+          Properties:
+            Path: /review
+            Method: POST
+            ApiId: !Ref CreateItemApi
+            Auth:
+              Authorizer: CreateItemApiGatewayInvokeRole
+

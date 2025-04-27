@@ -7,6 +7,12 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: "email"
+          AttributeType: "S"
+        - AttributeName: "name"
+          AttributeType: "S"
+        - AttributeName: "date of birth"
+          AttributeType: "N"
       KeySchema:
         - AttributeName: id
           KeyType: HASH
@@ -21,6 +27,10 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: price
+          AttributeType: "N"
       KeySchema:
         - AttributeName: id
           KeyType: HASH
