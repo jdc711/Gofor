@@ -15,6 +15,7 @@ table = dynamodb.Table("User")
 def valid_req(data):
     if "name" not in data or "email" not in data or "password" not in data:
         return False
+    return True
 
 def lambda_handler(event, context):
     data = json.loads(event["body"])

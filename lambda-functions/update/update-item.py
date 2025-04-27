@@ -6,10 +6,8 @@ table = dynamodb.Table("Item")
 
 def valid_req(data):
     if "item_id" not in data:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"message": "Missing required parameter"})
-        }
+        return False
+    return True
  
 def get_current_date():
     current_date_obj = datetime.now()

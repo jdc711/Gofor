@@ -18,6 +18,7 @@ table = dynamodb.Table("Item")
 def valid_req(data):
     if "store_id" not in data or "name" not in data or "price" not in data:
         return False
+    return True
 
 def lambda_handler(event, context):
     data = json.loads(event["body"])

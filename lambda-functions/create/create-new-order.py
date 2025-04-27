@@ -18,6 +18,7 @@ table = dynamodb.Table("Order")
 def valid_req(data):
     if "customer_id" not in data or "item_name" not in data:
         return False
+    return True
 
 def get_current_date():
     current_date_obj = datetime.now()

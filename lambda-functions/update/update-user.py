@@ -6,16 +6,12 @@ table = dynamodb.Table("User")
 
 def valid_req(data):
     if "user_id" not in data:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"message": "Missing required parameter"})
-        }
+        return False
     
     if ("latitude" in data and "longitude" not in data) or ("longitude" in data and "latitude" not in data):
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"message": "Missing required parameter"})
-        }
+        return False
+    
+    return True
 
  
 def get_current_date():
